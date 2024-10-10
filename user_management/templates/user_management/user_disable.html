@@ -1,0 +1,41 @@
+{% extends 'user_management/base.html' %}
+{% block title %}Disable user{% endblock title %}
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">User disable confirm</h5>
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Module: </strong>User management</h6>
+        <hr>
+        <form action="">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Stop right here!</h4>
+                <p>The following user(<strong>{{user2update.username}}</strong>) will be unavailable after complete this request.</p>
+                <hr>
+                <p class="mb-0">Are you sure to continue?</p>
+                <div class='mt-2'>
+                    <button class='btn btn-danger' type='button' onclick='submitForm({{user2update.id}})'>Disable</button>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function submitForm(user_id){
+        data = {
+            'is_active':false
+        }
+        
+        ProtectRequest('/user_management/user_partial_update/'+user_id+'/','PATCH',data)
+        .then(response => {
+            if (response.request_status) {
+                window.location.href = "{% url 'user_management:user_list_view' %}";
+            }else{
+                alert('Error: ' + response.error_msg);
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+        });
+    }
+</script>
+{% endblock body %}

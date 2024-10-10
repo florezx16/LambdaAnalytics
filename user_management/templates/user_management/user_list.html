@@ -1,0 +1,21 @@
+{% extends 'user_management/base.html' %}
+{% block title %}User list{% endblock title %}
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">User list</h5>
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Module: </strong>User management</h6>
+        <hr>
+        <ol>
+            {% for user in users %}
+                <li><a href="{% url 'user_management:user_update_view' user.id %}">{{user.username}}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+<script>
+    function login(){
+
+    }
+</script>
+{% endblock body %}

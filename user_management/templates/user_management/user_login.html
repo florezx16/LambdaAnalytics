@@ -1,0 +1,46 @@
+{% extends 'user_management/base.html' %}
+{% block title %}Login{% endblock title %}
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Module:</strong>User management</h6>
+        <hr>
+        <form action="">
+            {% csrf_token %}
+            {% for field in CustomUserLoginForm %}
+                <div class='mb-3'>
+                    <label for="{{field.auto_id}}">{{field.label}}:</label>
+                    {{field}}
+                </div>
+            {% endfor %}
+            <div class='mb-2'>
+                <button class='btn btn-success' type='button' onclick='login()'>Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function login(){
+        data = {
+            username: document.getElementById('id_username').value,
+            password: document.getElementById('id_password').value
+        }
+        
+        makeNormalRequest('/user_management/user_login/','POST',data)
+        .then(response => {
+            if (response.request_status) {
+                sessionStorage.setItem('accessToken', response.access_token);
+                sessionStorage.setItem('refreshToken', response.refresh_token);
+                window.location.href = "{% url 'user_management:home_view' %}"
+            }else{
+                alert('ERROR: ' + response.error_code)
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+        });
+
+    }
+</script>
+{% endblock body %}

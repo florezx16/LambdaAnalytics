@@ -1,0 +1,29 @@
+{% extends 'user_management/base.html' %}
+{% load static %}
+{% block title %}Logout{% endblock title %}
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">User logout</h5>
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Module:</strong>User management</h6>
+        <hr>
+        <button class='btn btn-danger' onclick='user_logout()'>Cerrar sesión</button>
+    </div>
+</div>
+<script>
+    function user_logout() {
+        ProtectRequest('/user_management/user_logout/','POST',{'refreshToken':sessionStorage.getItem('refreshToken')})
+        .then(response => {
+            if (response.request_status) {
+                sessionDestroy()
+            }else{
+                alert('ERROR: ' + response.error_code)
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+        });
+    }
+</script>
+
+{% endblock body %}

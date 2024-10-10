@@ -1,0 +1,83 @@
+{% extends 'user_management/base.html' %}
+{% block title %}New user{% endblock title %}
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Public user registration form</h5>
+        <h6 class="card-subtitle mb-2 text-muted"><strong>Module: </strong>User management</h6>
+        <hr>
+        <form action="">
+            {% if CustomUserMainForm %}
+                {% csrf_token %}
+                {% for field in CustomUserMainForm %}
+                    <div class='mb-3'>
+                        <label for="{{field.auto_id}}">{{field.label}}:</label>
+                        {{field}}
+                        {% if field.help_text %}
+                            <div id="{{field.auto_id}}_helptext" class="form-text">
+                                {{field.help_text}}
+                            </div>
+                        {% endif %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                {{error}}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class='mb-2'>
+                <button class='btn btn-primary' type='button' onclick='submitForm()'>Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function clean_form(){
+        document.getElementById('id_username').value = ''
+        document.getElementById('id_first_name').value = ''
+        document.getElementById('id_last_name').value = ''
+        document.getElementById('id_email').value = ''
+        document.getElementById('id_phone_number').value = ''
+        document.getElementById('id_gender').value = ''
+        document.getElementById('id_is_staff').value = ''
+        document.getElementById('id_password').value = ''
+    }
+
+    function submitForm(){
+        const isStaffCheckbox = document.getElementById('id_is_staff');
+        data = {
+            username: document.getElementById('id_username').value,
+            first_name: document.getElementById('id_first_name').value,
+            last_name: document.getElementById('id_last_name').value,
+            email: document.getElementById('id_email').value,
+            phone_number: document.getElementById('id_phone_number').value,
+            gender: document.getElementById('id_gender').value,
+            is_staff: isStaffCheckbox.checked,
+            password: document.getElementById('id_password').value
+        }
+
+        makeNormalRequest('/user_management/user_add/','POST',data)
+        .then(response => {
+            if (response.request_status) {
+                alert('User has been added correctly.')
+                clean_form()
+            }else{
+                if (response.form_errors){
+                    msg = ''
+                    errors = response.form_errors
+                    for(const property in errors) {
+                        msg+=`${property}: ${errors[property]} \n`
+                    }
+                    alert(msg)
+                }else{
+                    alert('Error: ' + JSON.stringify(data));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+        });
+    }
+</script>
+{% endblock body %}

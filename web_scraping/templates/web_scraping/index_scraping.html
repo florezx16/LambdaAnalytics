@@ -1,0 +1,164 @@
+{% extends 'web_scraping/base.html' %}
+{% load utils %}
+{% load humanize %}
+{% block title %}Index{% endblock title %}
+{% block body %}
+<div class='row'>
+    <div class="col-4">
+        <div class="card mt-2">
+            <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">ETL Result</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Relevant information about the latest search.</h6>
+                </div>
+                <div class="card-body">
+                    {% if etl_result.max_price_item %}
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{etl_result.max_price_item.img_url}}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">Most expensive:</h5>
+                                <h6 class="card-subtitle">{{etl_result.max_price_item.name}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">${{etl_result.max_price_item.discounted_price|intcomma}}</h6>
+                                <span>View on <a href="{{etl_result.max_price_item.product_url}}" target="_blank">Mercadolibre</a> 
+                            </div>
+                        </div>
+                    {% endif %}
+                    <br>
+                    {% if etl_result.min_price_item %}
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{etl_result.min_price_item.img_url}}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">Most cheap:</h5>
+                                <h6 class="card-subtitle">{{etl_result.min_price_item.name}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">${{etl_result.min_price_item.discounted_price|intcomma}}</h6>
+                                <span>View on <a href="{{etl_result.min_price_item.product_url}}" target="_blank">Mercadolibre</a> 
+                            </div>
+                        </div>
+                    {% endif %}
+                    <br>
+                    {% if etl_result.max_discount_item %}
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{etl_result.max_discount_item.img_url}}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">Most higher discount:</h5>
+                                <h6 class="card-subtitle">{{etl_result.max_discount_item.name}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">${{etl_result.max_discount_item.discounted_price|intcomma}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{etl_result.max_discount_item.discount_percentage}}% Off</h6>
+                                <span>View on <a href="{{etl_result.max_discount_item.product_url}}" target="_blank">Mercadolibre</a> 
+                            </div>
+                        </div>
+                    {% endif %}
+                    <br>
+                    {% if etl_result.max_rating_item %}
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{etl_result.max_rating_item.img_url}}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">Most higher rate:</h5>
+                                <h6 class="card-subtitle">{{etl_result.max_rating_item.name}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">${{etl_result.max_rating_item.discounted_price|intcomma}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{etl_result.max_rating_item.rating}}/5</h6>
+                                <span>View on <a href="{{etl_result.max_rating_item.product_url}}" target="_blank">Mercadolibre</a> 
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='col-8 mt-2'>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">What would you like to search for...?</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">We use <a href="https://www.mercadolibre.com.co/">Mercadolibre.com.co</a> to get our data. </h6>
+                </div>
+                <div class="card-body">
+                    <form action="" method='post' novalidate>
+                        {% csrf_token %}
+                        {% if query_form %}
+                            {% for field in query_form %}
+                                <div class='mb-3'>
+                                    {{field|setValidationClass}}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <div class="invalid-feedback">
+                                                {{error}}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class='mb-2'>
+                            <button class='btn btn-primary' type='submit'><i class="bi bi-search"></i> Search</button>
+                        </div>
+                        
+                        {% if etl_result.average_price %}
+                            <div>
+                                <h5>Average price from result: $ {{etl_result.average_price|intcomma}}</h5>
+                            </div>
+                        {% endif %}
+                            
+                    </form>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class='mb-3'>
+                                {% if message.tags == 'error' %}
+                                    <div class='p-2 col-lg-12'>
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <strong>Ups! </strong><span>{{message}}</span>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                    {% elif message.tags == 'success' %}
+                                        <div class='p-2 col-lg-12'>
+                                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                <strong>Success!</strong> <span>{{message}}</span>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Full name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Discount %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if request_body %}
+                                    {% for item in request_body %}
+                                        <tr>
+                                            <td class="fs-6" style='width:30em'><a href="{{item.product_url}}" target="_blank">{{item.name}}</a></td>
+                                            <td class="fs-6">$ {{item.discounted_price|intcomma}}</td>
+                                            <td>
+                                                {% if item.discount_percentage %}
+                                                    {{item.discount_percentage}}%
+                                                    {% else %}
+                                                    0%
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan='4' class='text-center'>Not results founds...</td>
+                                        </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
