@@ -18,6 +18,7 @@ una API desarrollada con Django y Django Rest Framework que realiza scraping en 
 - Web scraping de MercadoLibre usando BeautifulSoup
 - Endpoint de búsqueda de productos (`/api/search/?query=`)
 - Endpoint de análisis de precios, este Endpoint depende de que anteriormente ya hagas ejecutado el primero, ya que utilizara la información de este para realizar el análisis, como (precio más alto, más bajo, promedio) (`/api/get_etl/`)
+- ATTENTION Middleware (`/get_etl`) depends on the result from (`/search/?query=`). I orde to get the ETL result, you have to execute first the query and then the ETL will have information to execute it.
 - Respuesta en formato JSON
 - Pequeña interfaz para realizar las peticiones de manera más amigable
 
